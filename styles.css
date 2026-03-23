@@ -1,0 +1,53 @@
+td.first-col {
+    text-align: left;
+}
+td.message-field {
+    border: black;
+    border-style: groove;
+    border-top: none;
+    direction: rtl;
+}
+tr.sms-odd {
+    background-color: white;
+    color: black;
+}
+tr.sms-even {
+    background-color: #ead7fa5e;
+}
+tr.sms-odd,
+tr.sms-even{
+    border-bottom: black;
+    border-bottom-style: double;
+    border-bottom-width: thin;
+    text-align: center;
+}
+tr.sms-head {
+    background-color: #600101;
+    color: white;
+    text-align: center;
+}
+table.sms-table {
+    width: 100%;
+    font-size: large;
+    font-weight: 600;
+    font-family: cursive;
+}
+
+/* div#fitem_vc_description,
+div#fitem_vc_sendernumber,
+div#fitem_vc_amount,
+div#fitem_vc_day {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    min-width: 100%;
+}
+label#vc_description_label,
+label#vc_sendernumber_label,
+label#vc_amount_label,
+p#vc_day_label {
+    max-width: 100%;
+    min-width: max-content;
+    margin-left: -15px;
+} */

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Icon for Transfer Payment Gateway (InstaPay & Mobile Wallets - Egypt) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00A651"/>
+      <stop offset="100%" style="stop-color:#007B3F"/>
+    </linearGradient>
+    <linearGradient id="wallet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50"/>
+      <stop offset="100%" style="stop-color:#45A049"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <circle cx="24" cy="24" r="24" fill="url(#bg)"/>
+  
+  <!-- Mobile Phone -->
+  <rect x="12" y="8" width="24" height="36" rx="4" fill="#E0E0E0" stroke="#BDBDBD" stroke-width="1.5"/>
+  <rect x="16" y="11" width="16" height="4" rx="1" fill="#424242"/>
+  <circle cx="24" cy="42" r="2" fill="#9E9E9E"/>
+  
+  <!-- Wallet inside phone -->
+  <path d="M14 20 Q15 18 18 18 L30 18 Q33 18 34 20 L34 28 Q34 30 32 30 L16 30 Q14 30 14 28 Z" fill="url(#wallet)" stroke="#2E7D32" stroke-width="1"/>
+  <circle cx="20" cy="24" r="3" fill="#FFF" stroke="#2E7D32" stroke-width="0.5"/>
+  <text x="20" y="27" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#2E7D32" text-anchor="middle" dominant-baseline="middle">EGP</text>
+  
+  <!-- Transfer Arrow -->
+  <g transform="translate(32,20)">
+    <path d="M0 0 L6 0 L3 3 Z" fill="#FF9800" stroke="#F57C00" stroke-width="0.5"/>
+    <path d="M0 0 L6 0" stroke="#FF9800" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <!-- InstaPay hint -->
+  <text x="24" y="45" font-family="Arial, sans-serif" font-size="5" font-weight="bold" fill="#FFF" text-anchor="middle">InstaPay</text>
+</svg>
+
