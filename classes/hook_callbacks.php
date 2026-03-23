@@ -68,5 +68,6 @@ class hook_callbacks {
         $form   = new credit($action, ['type' => credit::WALLET]);
 
         $hook->add_option($form->render(), get_string('topupbytransfer', 'paygw_transfer'), 'vc');
+        $hook->order_option('vc', 2);
     }
 }
