@@ -90,6 +90,8 @@ class messages extends system_report {
 
         $this->add_columns_from_entity($msgname, ['timecreated', 'timemodified']);
 
+        $this->set_initial_sort_column("{$msgname}:timecreated", SORT_DESC);
+
         $this->add_filters_from_entity($msgname);
         $this->add_filter($entityuser1->get_filter('userselect')->set_header(new lang_string('charger', 'paygw_transfer')));
         $this->add_filter($entityuser2->get_filter('userselect')->set_header(new lang_string('receiver', 'paygw_transfer')));
