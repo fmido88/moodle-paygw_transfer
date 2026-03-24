@@ -22,7 +22,10 @@
  */
 import $ from 'jquery';
 import reportEvents from 'core_reportbuilder/local/events';
+import tableEvents from 'core_table/local/dynamic/events';
 import SELECTORS from 'core_reportbuilder/local/selectors';
+import * as tableSelectors from 'core_table/local/dynamic/selectors';
+
 
 let checkboxes;
 let input;
@@ -61,13 +64,22 @@ const registerEvent = () => {
     checkboxes.off('input change', onChange);
     checkboxes.on('input change', onChange);
 };
+const refresh = function() {
+    defineElements();
+    registerEvent();
+};
+/**
+ * Start document mutation observation.
+ */
+function startObserver() {
+    const mutationObserver = new MutationObserver(refresh);
+    const config = {attributes: false, childList: true, subtree: true};
+    mutationObserver.observe($(SELECTORS.regions.report)[0], config);
+}
 export const init = () => {
     defineElements();
     registerEvent();
-    $(SELECTORS.regions.report).on(reportEvents.tableReload, function() {
-            setTimeout(function() {
-            defineElements();
-            registerEvent();
-        }, 2000);
-    });
+    $(SELECTORS.regions.report).on(reportEvents.tableReload, refresh);
+    $(tableSelectors.main.region).on(tableEvents.tableContentRefreshed, refresh);
+    startObserver();
 };

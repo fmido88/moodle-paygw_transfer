@@ -23,7 +23,9 @@
 import $ from 'jquery';
 import {dispatchEvent} from 'core/event_dispatcher';
 import * as reportEvents from 'core_reportbuilder/local/events';
+import tableEvents from 'core_table/local/dynamic/events';
 import * as reportSelectors from 'core_reportbuilder/local/selectors';
+import * as tableSelectors from 'core_table/local/dynamic/selectors';
 import Templates from 'core/templates';
 import Ajax from 'core/ajax';
 import Modal from 'core/modal_delete_cancel';
@@ -62,7 +64,7 @@ const onChange = async function(e) {
 
         await requests[0];
 
-        dispatchEvent(reportEvents.tableReload, {}, $(reportSelectors.regions.report)[0]);
+        dispatchEvent(reportEvents.tableReload, {preservePagination: true}, $(reportSelectors.regions.report)[0]);
     });
 
     modalRoot.find('button[data-action="cancel"]').on('click', function() {
@@ -76,13 +78,22 @@ const registerEvent = () => {
     buttons.on('click', onChange);
 };
 
+const refresh = () => {
+    defineElements();
+    registerEvent();
+};
+/**
+ * Start document mutation observation.
+ */
+function startObserver() {
+    const mutationObserver = new MutationObserver(refresh);
+    const config = {attributes: false, childList: true, subtree: true};
+    mutationObserver.observe($(reportSelectors.regions.report)[0], config);
+}
 export const init = () => {
     defineElements();
     registerEvent();
-    $(reportSelectors.regions.report).on(reportEvents.tableReload, function() {
-        setTimeout(function() {
-            defineElements();
-            registerEvent();
-        }, 2000);
-    });
+    $(reportSelectors.regions.report).on(reportEvents.tableReload, refresh);
+    $(tableSelectors.main.region).on(tableEvents.tableContentRefreshed, refresh);
+    startObserver();
 };
