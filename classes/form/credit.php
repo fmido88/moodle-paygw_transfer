@@ -77,6 +77,8 @@ class credit extends \moodleform {
 
         $this->usetype = $this->_customdata['type'] ?? self::PAYMENT;
 
+        $mform->addElement('select', 'gateway',  get_string('gateway', 'paygw_transfer'), utils::get_gateways_options());
+
         $mform->addElement('html', $OUTPUT->heading(get_string('pluginname', 'paygw_transfer'), 3));
         $mform->addElement('static', 'wallet_description',
                         get_string('wallet_description_label', 'paygw_transfer'),
@@ -87,8 +89,6 @@ class credit extends \moodleform {
                         get_string('instapay_description_label', 'paygw_transfer'),
                         utils::get_instapay_description());
         $mform->hideIf('instapay_description', 'gateway', 'neq', utils::GATEWAY_INSTAPAY);
-
-        $mform->addElement('select', 'gateway',  get_string('gateway', 'paygw_transfer'), utils::get_gateways_options());
 
         $mform->addElement('text', 'sender', get_string('sendernumber', 'paygw_transfer'), ['id' => 'vc_sendernumber']);
         $mform->setType('sender', PARAM_ALPHANUM);
