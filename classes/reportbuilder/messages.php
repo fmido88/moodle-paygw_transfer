@@ -124,7 +124,7 @@ class messages extends system_report {
             false,
             new lang_string('markmessageundone', $component)
         );
-        $action->add_callback(function ($row) {
+        $action->add_callback(function($row) {
             return has_capability('paygw/transfer:markdone', $this->get_context()) && !empty($row->done);
         });
         $this->add_action($action);
@@ -136,7 +136,7 @@ class messages extends system_report {
             false,
             new lang_string('deletemessage', $component)
         );
-        $action->add_callback(fn ($row) => is_siteadmin());
+        $action->add_callback(fn() => has_capability('paygw/transfer:delete', $this->get_context()));
         $this->add_action($action);
 
         $PAGE->set_context(null);

@@ -258,8 +258,11 @@ class utils {
         $report = \core_reportbuilder\system_report_factory::create(messages::class, $context);
         $PAGE->requires->js_call_amd('paygw_transfer/messages-table', 'init');
 
-        if (is_siteadmin()) {
+        if (has_capability('paygw/transfer:markdone', $report->get_context())) {
             $PAGE->requires->js_call_amd('paygw_transfer/mark-done', 'init');
+        }
+
+        if (has_capability('paygw/transfer:delete', $report->get_context())) {
             $PAGE->requires->js_call_amd('paygw_transfer/delete-messages', 'init');
         }
 
