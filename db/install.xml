@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="payment/gateway/transfer/db" VERSION="20231108" COMMENT="XMLDB file for Moodle payment/gateway/transfer"
+<XMLDB PATH="payment/gateway/transfer/db" VERSION="20260324" COMMENT="XMLDB file for Moodle payment/gateway/transfer"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
     <TABLE NAME="paygw_transfer_messages" COMMENT="messages from vodafone cash">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="subject" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="message" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="message" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="amount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
         <FIELD NAME="sender" TYPE="char" LENGTH="25" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="chargerid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
@@ -21,7 +21,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-      <TABLE NAME="paygw_transfer_orders" COMMENT="Orders made by transfer payment gateway">
+    <TABLE NAME="paygw_transfer_orders" COMMENT="Orders made by transfer payment gateway">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>

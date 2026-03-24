@@ -34,7 +34,18 @@ function xmldb_paygw_transfer_upgrade($oldversion = 0) {
     require_once(__DIR__ . "/upgradelib.php");
 
     $dbman = $DB->get_manager();
+    if ($oldversion < 2026032002) {
 
+        // Changing type of field message on table paygw_transfer_messages to text.
+        $table = new xmldb_table('paygw_transfer_messages');
+        $field = new xmldb_field('message', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'subject');
+
+        // Launch change of type for field message.
+        $dbman->change_field_type($table, $field);
+
+        // Transfer savepoint reached.
+        upgrade_plugin_savepoint(true, 2026032002, 'paygw', 'transfer');
+    }
     paygw_transfer_migrate();
 
     return true;
