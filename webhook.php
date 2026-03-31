@@ -39,7 +39,7 @@ try {
     $message = $webhook->save();
 
     http_response_code(200);
-    die;
+    PHPUNIT_TEST || die;
 } catch (Throwable $e) {
     webhook::handle_error($e);
 }

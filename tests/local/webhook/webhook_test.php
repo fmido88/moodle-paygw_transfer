@@ -318,5 +318,78 @@ class webhook_test extends advanced_testcase {
         $this->assertEquals($msg1->get_amount(), $msg2->get_amount());
         $this->assertEquals($msg1->sender, $msg2->sender);
     }
-}
 
+    public function test_webhook_page() {
+        $this->resetAfterTest();
+
+        // Test instapay message.
+        $msg = testing::mock_instapay_message(121, 'mo.farouk88');
+        $response = testing::mock_receiving_message($msg);
+
+        $this->assertEquals(200, $response['info']['http_code']);
+        $messages = message::get_messages(121, 'mo.farouk88');
+        $this->assertEquals(1, \count($messages));
+
+        // Test vodafone cash messages Arabic template.
+        $phone = testing::get_random_phone_number();
+        $msg = testing::mock_vodafone_cash_message(100, $phone, temp: 'ar');
+                $response = testing::mock_receiving_message($msg);
+
+        $this->assertEquals(200, $response['info']['http_code']);
+        $messages = message::get_messages(100, $phone);
+        $this->assertEquals(1, \count($messages));
+
+        // Test vodafone cash messages English template.
+        $phone = testing::get_random_phone_number();
+        $msg = testing::mock_vodafone_cash_message(520, $phone, temp: 'ar');
+                $response = testing::mock_receiving_message($msg);
+
+        $this->assertEquals(200, $response['info']['http_code']);
+        $this->assertEmpty($response['error']);
+        $messages = message::get_messages(520, $phone);
+        $this->assertEquals(1, \count($messages));
+
+        // Test with and without secret key.
+        $secretkey = utils::generate_secret_key(true);
+        $instapayaccount = testing::get_random_instapay_sender();
+        $msg = testing::mock_instapay_message(70, $instapayaccount);
+        $response = testing::mock_receiving_message($msg);
+
+        $this->assertEquals(400, $response['info']['http_code']);
+        $messages = message::get_messages(70, $instapayaccount);
+        $this->assertEquals(0, \count($messages));
+
+        // Now with the secret key in the header.
+        $instapayaccount = testing::get_random_instapay_sender();
+        $msg = testing::mock_instapay_message(170, $instapayaccount);
+        $response = testing::mock_receiving_message($msg, [], ["Authorization: $secretkey"]);
+
+        $this->assertEquals(200, $response['info']['http_code']);
+        $messages = message::get_messages(170, $instapayaccount);
+        $this->assertEquals(1, \count($messages));
+        $this->assertNull(utils::get_headers()['Authorization'] ?? null);
+
+        // Test secret key in the payload.
+        $phone = testing::get_random_phone_number();
+        $msg = testing::mock_vodafone_cash_message(82, $phone);
+        $response = testing::mock_receiving_message($msg, ['secret' => $secretkey]);
+
+        $this->assertEquals(200, $response['info']['http_code']);
+        $messages = message::get_messages(82, $phone);
+        $this->assertEquals(1, \count($messages));
+        $this->assertNull(utils::get_headers()['Authorization'] ?? null);
+        $this->assertNull(optional_param('secret', null, PARAM_TEXT));
+
+        // Test secret key in the message itself.
+        $phone = testing::get_random_phone_number();
+        $msg = testing::mock_vodafone_cash_message(552, $phone, secret: $secretkey);
+        $response = testing::mock_receiving_message($msg);
+
+        $this->assertEquals(200, $response['info']['http_code']);
+        $messages = message::get_messages(552, $phone);
+        $this->assertEquals(1, \count($messages));
+        $this->assertNull(utils::get_headers()['Authorization'] ?? null);
+        $this->assertNull(optional_param('secret', null, PARAM_TEXT));
+        $this->assertStringNotContainsStringIgnoringCase($secretkey, reset($messages)->message);
+    }
+}

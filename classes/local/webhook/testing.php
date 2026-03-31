@@ -253,26 +253,62 @@ class testing {
      */
     public static function mock_receiving_message(string $message, array $payload = [], array $headers = []) {
         global $CFG;
+        if (PHPUNIT_TEST) {
+            $tobecleanedpost = ['message'];
+            $_POST['message'] = $message;
+            foreach($payload as $key => $param) {
+                if ($key === 'message') {
+                    continue;
+                }
+                $_POST[$key] = $param;
+                $tobecleanedpost[] = $key;
+            }
+            $tobecleanedheaders = [];
+            foreach($headers as $header) {
+                // Mock sending headers.
+                [$key, $value] = explode(':', $header);
+                if (empty($key) || empty($value)) {
+                    continue;
+                }
+                $key = core_text::strtotitle(trim($key));
+                $_SERVER["HTTP_{$key}"] = trim($value);
+                $tobecleanedheaders[] = "HTTP_{$key}";
+            }
+            ob_start();
+            require("{$CFG->dirroot}/payment/gateway/transfer/webhook.php");
+
+            // Cleanup the globals.
+            foreach ($tobecleanedpost as $key) {
+                unset($_POST[$key]);
+            }
+            foreach ($tobecleanedheaders as $key) {
+                unset($_SERVER[$key]);
+            }
+
+            $response = ob_get_clean();
+            if (false !== ($errorpos = strpos($response, 'ERROR: '))) {
+                $error = substr($response, $errorpos + 7);
+                $response = substr($response, 0, $errorpos);
+            }
+            return [
+                'info'     => ['http_code' => http_response_code()],
+                'response' => trim($response),
+                'error'    => trim($error ?? ''),
+            ];
+        }
         require_once("{$CFG->libdir}/filelib.php");
         $curl = new curl(['ignoresecurity' => true]);
         $url  = new url('/payment/gateway/transfer/webhook.php');
 
-        if (PHPUNIT_TEST) {
-            $headers[] = 'Phpunit-Test: 1';
-        }
         $curl->setHeader($headers);
 
         $payload['message'] = $message;
         $response           = $curl->post($url->out(false), $payload);
 
-        ob_start();
-        var_dump($curl);
-
         return [
             'response' => $response,
             'info'     => $curl->get_info(),
             'error'    => $curl->error ?? '',
-            'dump'     => ob_get_clean(),
         ];
     }
 }
