@@ -128,7 +128,7 @@ class order extends \core_reportbuilder\local\entities\base {
             'cost',
             new lang_string('cost'),
             $this->get_entity_name()
-        ))->add_field("{$tablealias}.id")
+        ))->add_field("{$tablealias}.id", "idforcost")
         ->add_joins($this->get_joins())
         ->set_type(column::TYPE_FLOAT)
         ->set_is_sortable(false)
@@ -147,7 +147,7 @@ class order extends \core_reportbuilder\local\entities\base {
             'currency',
             new lang_string('currency'),
             $this->get_entity_name()
-        ))->add_field("{$tablealias}.id")
+        ))->add_field("{$tablealias}.id", "idforcurrency")
         ->add_joins($this->get_joins())
         ->set_type(column::TYPE_TEXT)
         ->set_is_sortable(false)
@@ -169,9 +169,9 @@ class order extends \core_reportbuilder\local\entities\base {
     /**
      * Get the order object.
      * @param  int      $id
-     * @return gw_order
+     * @return ?gw_order
      */
-    protected static function get_order(int $id): gw_order {
+    protected static function get_order(int $id): ?gw_order {
         if (isset(static::$orders[$id])) {
             return static::$orders[$id];
         }
@@ -179,7 +179,8 @@ class order extends \core_reportbuilder\local\entities\base {
         try {
             static::$orders[$id] = new gw_order($id);
         } catch (\Throwable $e) {
-            debugging($e->getMessage(), DEBUG_DEVELOPER, $e->getTrace());
+            $msg = "Error constructing order with id '$id' the payable item may be deleted:\n<br>";
+            debugging($msg . $e->getMessage(), DEBUG_DEVELOPER, $e->getTrace());
             static::$orders[$id] = null;
         }
 

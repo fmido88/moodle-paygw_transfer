@@ -22,7 +22,6 @@ use core\url;
 use core_reportbuilder\local\report\action;
 use core_reportbuilder\system_report;
 use paygw_transfer\local\order\order;
-use paygw_transfer\local\utils\utils;
 
 /**
  * Class orders
@@ -57,7 +56,7 @@ class orders extends system_report {
 
         $this->add_column_from_entity("{$ordername}:id");
         $this->add_column_from_entity("{$username}:fullnamewithlink");
-        $this->add_columns_from_entity($ordername, [], ['timecreated', 'timemodified', 'id']);
+        $this->add_columns_from_entity($ordername, [], ['timecreated', 'timemodified', 'id', 'userid']);
         $this->add_columns_from_entity($ordername, ['timecreated', 'timemodified']);
 
         $this->add_filters_from_entity($entityuser->get_entity_name(), ['userselect']);
@@ -72,7 +71,14 @@ class orders extends system_report {
             new lang_string('markdone', $component)
             );
         $action->add_callback(function($row) {
-            return !\in_array($row->status, order::get_successful_statuses());
+            $hascurrency = false;
+            foreach ($row as $column => $value) {
+                if (preg_match('/c\d+_(idforcost|idforcurrency)/', $column) && !empty($value)) {
+                    $hascurrency = true;
+                    break;
+                }
+            }
+            return $hascurrency && !\in_array($row->status, order::get_successful_statuses());
         });
         $this->add_action($action);
 
@@ -87,5 +93,7 @@ class orders extends system_report {
             return \in_array($row->status, order::get_changeable_statuses());
         });
         $this->add_action($action);
+
+        $this->set_initial_sort_column("{$ordername}:id", SORT_DESC);
     }
 }

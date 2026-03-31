@@ -133,14 +133,14 @@ abstract class base {
         $this->load_record_data();
 
         try {
-            $this->payable = helper::get_payable($this->component, $this->paymentarea, $this->itemid);
+            $payable = helper::get_payable($this->component, $this->paymentarea, $this->itemid);
         } catch (\dml_exception $e) {
-            $this->payable = null;
+            $payable = null;
         }
 
-        if (!empty($this->payable)) {
-            $this->rawcost  = $this->payable->get_amount();
-            $this->currency = $this->payable->get_currency();
+        if (!empty($payable)) {
+            $this->rawcost  = $payable->get_amount();
+            $this->currency = $payable->get_currency();
         } else if (!empty($this->paymentid)) {
             $conditions = [
                 'id'          => $this->paymentid,
@@ -154,6 +154,7 @@ abstract class base {
             if (!empty($payment)) {
                 $this->rawcost  = $payment->amount;
                 $this->currency = $payment->currency;
+                $payable = new payable($payment->amount, $payment->currency, $payment->accountid);
             } else if (!empty($e)) {
                 throw $e;
             }
@@ -164,6 +165,8 @@ abstract class base {
 
             throw new moodle_exception("Cannot find the order with id $orderid");
         }
+
+        $this->payable = $payable;
 
         $surcharge  = helper::get_gateway_surcharge(static::gateway());
         $this->cost = helper::get_rounded_cost($this->rawcost, $this->currency, $surcharge);
