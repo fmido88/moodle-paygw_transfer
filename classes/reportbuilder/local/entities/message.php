@@ -157,6 +157,10 @@ class message extends \core_reportbuilder\local\entities\base {
             $column->add_callback($callback);
         }
 
+        if ($field === 'message') {
+            $column->add_attributes(['dir' => 'rtl', 'style' => "text-align: center;"]);
+        }
+
         return $column;
     }
 }
