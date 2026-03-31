@@ -82,19 +82,19 @@ class messages extends system_report {
 
         $this->add_column_from_entity("{$username1}:fullnamewithlink");
         $this->get_column("{$username1}:fullnamewithlink")
-            ->set_title(new lang_string('charger', 'paygw_transfer'));
+            ->set_title(new lang_string('receiver', 'paygw_transfer'));
 
         $this->add_column_from_entity("{$username2}:fullnamewithlink");
         $this->get_column("{$username2}:fullnamewithlink")
-            ->set_title(new lang_string('receiver', 'paygw_transfer'));
+            ->set_title(new lang_string('charger', 'paygw_transfer'));
 
         $this->add_columns_from_entity($msgname, ['timecreated', 'timemodified']);
 
         $this->set_initial_sort_column("{$msgname}:timecreated", SORT_DESC);
 
         $this->add_filters_from_entity($msgname);
-        $this->add_filter($entityuser1->get_filter('userselect')->set_header(new lang_string('charger', 'paygw_transfer')));
-        $this->add_filter($entityuser2->get_filter('userselect')->set_header(new lang_string('receiver', 'paygw_transfer')));
+        $this->add_filter($entityuser1->get_filter('userselect')->set_header(new lang_string('receiver', 'paygw_transfer')));
+        $this->add_filter($entityuser2->get_filter('userselect')->set_header(new lang_string('charger', 'paygw_transfer')));
 
         $this->set_checkbox_toggleall(function (stdClass $row) {
             if (!empty($row->done)) {
