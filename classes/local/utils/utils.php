@@ -301,4 +301,19 @@ class utils {
             'page'      => $page,
         ];
     }
+
+    /**
+     * Generate a secret key.
+     * @param bool $overwrite
+     */
+    public static function generate_secret_key(bool $overwrite = false) {
+        $old = get_config('paygw_transfer', 'secret');
+        if (!$overwrite && ($old = get_config('paygw_transfer', 'secret'))) {
+            return $old;
+        }
+
+        $new = md5(uniqid(rand(), true));
+        set_config('secret', $new, 'paygw_transfer');
+        return $new;
+    }
 }
