@@ -29,6 +29,10 @@ use phpunit_util;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testing {
+    protected static array $mocked = [
+        'phones' => [],
+        'senders' => [],
+    ];
     /**
      * Get the data generator.
      * @return \testing_data_generator
@@ -63,7 +67,7 @@ class testing {
         $female    = rand(0, 1);
         $generator = self::get_generator();
         $sender    = $generator->firstnames[($country * 10) + $firstname + ($female * 5)];
-        $sender .= ' ' . $generator->lastnames[($country * 10) + $lastname + ($female * 5)];
+        $sender .= ' ' . $generator->lastnames[($country * 10) + $lastname + rand(0, 5)];
 
         return $sender;
     }
@@ -81,7 +85,10 @@ class testing {
         while ($length--) {
             $random .= $charset[mt_rand(0, $count - 1)];
         }
-
+        if (\in_array($random, static::$mocked['senders'])) {
+            return self::get_random_instapay_sender();
+        }
+        static::$mocked['senders'][] = $random;
         return $random;
     }
 
@@ -97,7 +104,10 @@ class testing {
         for ($i = 0; $i < 8; $i++) {
             $number .= rand(0, 9);
         }
-
+        if (\in_array($number, static::$mocked['phones'])) {
+            return self::get_random_phone_number();
+        }
+        static::$mocked['phones'][] = $number;
         return $number;
     }
 
@@ -246,10 +256,11 @@ class testing {
 
     /**
      * Mock sending a message without secret key (Must be added manually) before sending.
-     * @param  string                               $message
-     * @param  array                                $payload
-     * @param  array                                $headers
-     * @return array{info: array, response: string}
+     * @param  string $message
+     * @param  array  $payload
+     * @param  array  $headers
+     *
+     * @return array{info: array, response: string, error: string}
      */
     public static function mock_receiving_message(string $message, array $payload = [], array $headers = []) {
         global $CFG;
@@ -297,6 +308,7 @@ class testing {
             ];
         }
         require_once("{$CFG->libdir}/filelib.php");
+
         $curl = new curl(['ignoresecurity' => true]);
         $url  = new url('/payment/gateway/transfer/webhook.php');
 
