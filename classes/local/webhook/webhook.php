@@ -17,7 +17,6 @@
 namespace paygw_transfer\local\webhook;
 
 use core\exception\coding_exception;
-use core\exception\moodle_exception;
 use paygw_transfer\exceptions\secret_key_exception;
 use paygw_transfer\local\messages\message;
 use paygw_transfer\local\order\order;
@@ -262,13 +261,14 @@ class webhook {
     /**
      * Handle any exception in the webhook.
      * @param Throwable $e
-     * @return never
+     * @return never|void
      */
-    public static function handle_error(Throwable $e): never {
-        http_response_code(400);
+    public static function handle_error(Throwable $e) {
+        // To let phpunit test know that there is error thrown here.
         $error = $e->getMessage();
         $error .= "\n" . $e->getTraceAsString();
-        echo '(' . userdate(time()) . "):\n$error"; // Log the error before throw the error.
-        die;
+        echo ' ERROR: (' . userdate(time()) . "):\n$error"; // Log the error before throw the error.
+        http_response_code(400);
+        PHPUNIT_TEST || die;
     }
 }
